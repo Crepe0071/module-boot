@@ -1,0 +1,12 @@
+dependencies {
+    // Module
+    implementation(project(":domain"))
+    implementation(project(":library:utils"))
+
+    // Redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis:3.4.2'
+
+
+    testImplementation("org.springframework.boot:spring-boot-starter-test:${springBootVersion}")
+    testImplementation("org.testcontainers:testcontainers:1.19.0")
+}

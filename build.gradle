@@ -1,0 +1,59 @@
+plugins {
+    id "java"
+    id "java-library"
+    id "org.springframework.boot" version "${springBootVersion}" apply false
+    id "io.spring.dependency-management" version "${springDependencyManagementVersion}" apply false
+    id "org.asciidoctor.jvm.convert" version "${asciidoctorConvertVersion}" apply false
+}
+
+allprojects {
+    group = "${projectGroup}"
+    version = "${applicationVersion}"
+}
+
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'java-library'
+    apply plugin: 'io.spring.dependency-management'
+    apply plugin: 'org.asciidoctor.jvm.convert'
+
+    java {
+        sourceCompatibility = "${javaVersion}"
+    }
+
+    dependencies {
+        // Jackson
+        implementation("com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}")
+
+
+        // lombok
+        annotationProcessor("org.projectlombok:lombok:${lombokVersion}")
+        compileOnly("org.projectlombok:lombok:${lombokVersion}")
+
+        // annotation processor
+        annotationProcessor "org.springframework.boot:spring-boot-configuration-processor:${springBootVersion}"
+        configurations {
+            compileOnly {
+                extendsFrom annotationProcessor
+            }
+        }
+    }
+
+    test {
+        useJUnitPlatform {
+            excludeTags('restdocs')
+        }
+    }
+
+    tasks.register('restDocsTest', Test) {
+        group = 'verification'
+        useJUnitPlatform {
+            includeTags('restdocs')
+        }
+    }
+
+    tasks.named('asciidoctor') {
+        dependsOn restDocsTest
+    }
+
+}
